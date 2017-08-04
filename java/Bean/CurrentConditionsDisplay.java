@@ -1,8 +1,9 @@
 package Bean;
 
 import Interface.DisplayElement;
-import Interface.Observer;
-import Interface.Subject;
+
+import java.util.Observable;
+import java.util.Observer;
 
 /*
 Created by ChrisChan on 2017/8/4.
@@ -10,10 +11,11 @@ Created by ChrisChan on 2017/8/4.
 public class CurrentConditionsDisplay implements Observer, DisplayElement {
     private float temperature;
     private float humidity;
-    private Subject weatherData;
+    private Observable observable;
 
-    public CurrentConditionsDisplay(Subject weatherData) {
-        this.weatherData = weatherData;
+    public CurrentConditionsDisplay(Observable observable) {
+        this.observable = observable;
+        observable.addObserver(this);
     }
 
     @Override
@@ -22,8 +24,12 @@ public class CurrentConditionsDisplay implements Observer, DisplayElement {
     }
 
     @Override
-    public void update(float temperature, float humidity, float pressure) {
-        this.temperature = temperature;
-        this.humidity = humidity;
+    public void update(Observable observable, Object args) {
+        if (observable instanceof WeatherData) {
+            WeatherData weatherData = (WeatherData) observable;
+            this.temperature = weatherData.getTemperature();
+            this.humidity = weatherData.getHumidity();
+            display();
+        }
     }
 }
